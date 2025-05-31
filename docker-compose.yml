@@ -1,0 +1,55 @@
+version: "3"
+services:
+  frontend:
+    container_name: react
+    build:
+      context: .
+      dockerfile: ./docker/development/react/Dockerfile
+    volumes:
+      - ./frontend/:/app/frontend
+    environment:
+      - WATCHPACK_POLLING=true
+    ports:
+      - "3000:3000"
+
+  backend:
+    container_name: spring
+    build:
+      context: .
+      dockerfile: ./docker/development/spring/Dockerfile
+    volumes:
+      - ./backend:/app/backend  # ← ここが開発のキモ
+    ports:
+      - "18080:8000"
+    command: ./gradlew bootRun --no-daemon
+
+  # databasae:
+  #   container_name: mysql
+  #   build:
+  #     context: .
+  #     dockerfile: ./docker/mysql/Dockerfile
+  #   ports:
+  #   - '13306:3306'
+  #   volumes:
+  #   - ./initdb.d:/docker-entrypoint-initdb.d
+  #   environment:
+  #     MYSQL_ROOT_PASSWORD: root
+  #     MYSQL_DATABASE: team_b
+  #     MYSQL_USER: root
+  #     MYSQL_PASSWORD: admin
+  #     TZ: 'Asia/Tokyo'
+  #     backend:
+  #   command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+   
+  # webserver:
+  #   container_name: nginx
+  #   build:
+  #     context: .
+  #     dockerfile: ./docker/nginx/Dockerfile
+  #   ports:
+  #     - 8000:8000
+  #   volumes:
+  #     - ./frontend/build:/var/www
+  #     - ./containers/nginx/:/etc/nginx/conf.d/
+  #   depends_on:
+  #     - frontend
