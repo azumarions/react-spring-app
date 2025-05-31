@@ -1,13 +1,19 @@
 FROM node:20
 
+# 作業ディレクトリを設定
 WORKDIR /app/frontend
 
-COPY ./frontend/package*.json ./
+# package.jsonとpackage-lock.jsonを先にコピー（キャッシュを有効活用）
+COPY frontend/package*.json ./
 
+# 依存関係をインストール
 RUN npm install
 
-COPY ./frontend/ .
+# アプリのソースコードをコピー
+COPY frontend/ ./
 
-EXPOSE 3000
+# 開発用のポートを開放（Viteのデフォルトは5173
+EXPOSE 5173
 
-CMD ["npm run dev"]
+# Viteの開発サーバーを起動
+CMD ["npm", "run", "dev"]

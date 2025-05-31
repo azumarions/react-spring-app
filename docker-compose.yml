@@ -7,10 +7,13 @@ services:
       dockerfile: ./docker/development/react/Dockerfile
     volumes:
       - ./frontend/:/app/frontend
+      # コンテナ内のnode_modulesをホストに上書きしない(無名バインドでOS間のバイナリ変換エラーを解消)
+      - /app/frontend/node_modules
     environment:
       - WATCHPACK_POLLING=true
     ports:
-      - "3000:3000"
+      - "5173:5173"
+    command: npm run dev
 
   backend:
     container_name: spring
