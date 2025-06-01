@@ -22,37 +22,32 @@ services:
       dockerfile: ./docker/development/spring/Dockerfile
     volumes:
       - ./backend:/app/backend  # ← ここが開発のキモ
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker 
     ports:
-      - "18080:8000"
+      - "8080:8000"
+    depends_on:
+      - database
     command: ./gradlew bootRun --no-daemon
 
-  # databasae:
-  #   container_name: mysql
-  #   build:
-  #     context: .
-  #     dockerfile: ./docker/mysql/Dockerfile
-  #   ports:
-  #   - '13306:3306'
-  #   volumes:
-  #   - ./initdb.d:/docker-entrypoint-initdb.d
-  #   environment:
-  #     MYSQL_ROOT_PASSWORD: root
-  #     MYSQL_DATABASE: team_b
-  #     MYSQL_USER: root
-  #     MYSQL_PASSWORD: admin
-  #     TZ: 'Asia/Tokyo'
-  #     backend:
-  #   command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
-   
-  # webserver:
-  #   container_name: nginx
-  #   build:
-  #     context: .
-  #     dockerfile: ./docker/nginx/Dockerfile
-  #   ports:
-  #     - 8000:8000
-  #   volumes:
-  #     - ./frontend/build:/var/www
-  #     - ./containers/nginx/:/etc/nginx/conf.d/
-  #   depends_on:
-  #     - frontend
+  database:
+    container_name: mysql
+    build:
+      context: .
+      dockerfile: ./docker/development/mysql/Dockerfile
+    ports:
+    - '13306:3306'
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./database/initdb.d:/docker-entrypoint-initdb.d
+    environment:
+      # MYSQL_ROOT_PASSWORD: admin
+      MYSQL_DATABASE: team_b
+      MYSQL_USER: root
+      MYSQL_PASSWORD: admin
+      TZ: 'Asia/Tokyo'
+      backend:
+    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+
+volumes:
+  mysql-data:
