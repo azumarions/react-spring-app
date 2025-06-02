@@ -1,0 +1,4 @@
+## ゴール
+reactからspringにapiリクエストを送りmysqlからデータを取得し表示できる
+reactがnginx上で動作する
+docker-compose up --build -dで全てのコンテナが起動する
