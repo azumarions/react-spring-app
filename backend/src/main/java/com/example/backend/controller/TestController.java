@@ -26,6 +26,13 @@ public class TestController {
     @GetMapping("test1")
     @ResponseBody
     public String test1() {
-        return "test1";
+        return String.valueOf(testService.findTestById(1));
+    }
+
+    @GetMapping("test2")
+    @ResponseBody
+    public String test2() {
+        return "test2";
     }
  }
+ 

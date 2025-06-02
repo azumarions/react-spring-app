@@ -19,4 +19,8 @@ public class TestService {
     public List<Test> findAll() {
         return testRepository.findAll();
     }
+
+    public Test findTestById(Integer id) {
+        return testRepository.findTestById(id);
+    }
 }
