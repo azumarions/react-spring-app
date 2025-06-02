@@ -1,4 +1,8 @@
 ## ゴール
+docker-compose up --build -dで全てのコンテナが起動しサーバー(react, spring, mysql)が立ち上がる
 reactからspringにapiリクエストを送りmysqlからデータを取得し表示できる
+
+## todo
+api連携
+本番環境のdockerfileを作成
 reactがnginx上で動作する
-docker-compose up --build -dで全てのコンテナが起動する

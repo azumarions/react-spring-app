@@ -21,12 +21,12 @@ services:
       context: .
       dockerfile: ./docker/development/spring/Dockerfile
     volumes:
-      - ./backend:/app/backend
+      - ./backend:/app/backend # ローカルとコンテナのデータ共有(ローカルのコード変更がコンテナのコードに反映される)
     ports:
       - "8080:8080"
     depends_on:
       - database
-    command: ./gradlew bootRun --no-daemon
+    command: ./gradlew bootRun --no-daemon # スナップショットは使わない()
 
   database:
     container_name: mysql
@@ -36,8 +36,8 @@ services:
     ports:
     - '3306:3306'
     volumes:
-      - ./mysql_volume:/var/lib/mysql
-      - ./database:/docker-entrypoint-initdb.d
+      - ./database/mysql_volume:/var/lib/mysql # 保存領域
+      - ./database:/docker-entrypoint-initdb.d # 初回テーブル・データ生成
     environment:
       MYSQL_ROOT_PASSWORD: admin
       MYSQL_DATABASE: team_b
