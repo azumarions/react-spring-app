@@ -5,12 +5,9 @@ services:
     build:
       context: .
       dockerfile: ./docker/production/react/Dockerfile
-    volumes:
-      - ./frontend/:/app/frontend
-      # コンテナ内のnode_modulesをホストに上書きしない(無名バインドでOS間のバイナリ変換エラーを解消)
-      - /app/frontend/node_modules
-    environment:
-      - WATCHPACK_POLLING=true
+    # environment:
+    #   - WATCHPACK_POLLING=true
+    #   - viteの環境変数を設定する場合は、.env.productionファイルを作成して、VITE_で始まる変数を定義する
     tty: true
     ports:
       - "80:80"
@@ -20,13 +17,17 @@ services:
     build:
       context: .
       dockerfile: ./docker/production/spring/Dockerfile
-    # volumes: // 本番環境ではソースコードをマウントしない jarが上書きされ見つからなくなるため
-    #   - ./backend:/app/backend
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://database:3306/team_b?useSSL=false&characterEncoding=utf8&serverTimezone=Asia/Tokyo
+      - SPRING_DATASOURCE_USERNAME=user
+      - SPRING_DATASOURCE_PASSWORD=password
+      - SPRING_SERVER_PORT=8080
+      - TZ=Asia/Tokyo
     ports:
-      - "18080:18080"
+      - "8080:8080"
     depends_on:
       - database
-    command: java -jar /app/backend/build/libs/backend-0.0.1-SNAPSHOT.jar
+    command: sh -c "/wait-for-it.sh database:3306 -- java -jar /app/backend/build/libs/backend-0.0.1-SNAPSHOT.jar"
 
   database:
     container_name: mysql_production
@@ -34,10 +35,9 @@ services:
       context: .
       dockerfile: ./docker/production/mysql/Dockerfile
     ports:
-      - "13306:13306"
+      - "3306:3306"
     volumes:
-      - ./database/mysql_volume:/var/lib/mysql # 保存領域
-      - ./database:/docker-entrypoint-initdb.d # 初回テーブル・データ生成
+      - ./mysql_volume:/var/lib/mysql # 保存領域
     environment:
       MYSQL_ROOT_PASSWORD: admin
       MYSQL_DATABASE: team_b
