@@ -6,3 +6,11 @@ reactからspringにapiリクエストを送りmysqlからデータを取得し�
 api連携
 本番環境のdockerfileを作成
 reactがnginx上で動作する
+
+docker compose -f docker-compose.prod.yml up --build -d --no-cache
+
+# pagination
+# docker-production
+# ecr
+# enviroment
+# 

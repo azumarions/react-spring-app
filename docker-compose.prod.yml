@@ -1,56 +1,47 @@
 version: "3"
 services:
-  # frontend:
-  #   container_name: react
-  #   build:
-  #     context: .
-  #     dockerfile: ./docker/react/Dockerfile
-  #   volumes:
-  #     - ./backend/:/usr/src/app # todo: 調べる
-  #   environment:
-  #     - WATCHPACK_POLLING=true
-  #   ports:
-  #     - "3000:3000"
-
-  backend:
-    container_name: spring
+  frontend:
+    container_name: react_production
     build:
       context: .
-      dockerfile: ./docker/spring/Dockerfile
+      dockerfile: ./docker/production/react/Dockerfile
     volumes:
-      - ./backend:/app/backend
+      - ./frontend/:/app/frontend
+      # コンテナ内のnode_modulesをホストに上書きしない(無名バインドでOS間のバイナリ変換エラーを解消)
+      - /app/frontend/node_modules
+    environment:
+      - WATCHPACK_POLLING=true
+    tty: true
     ports:
-      - "8080:8080"
-    # command: java -jar /app/backend/build/libs/backend-0.0.1-SNAPSHOT.jar
-    command: ./gradlew bootRun --no-daemon
+      - "80:80"
 
-  # databasae:
-  #   container_name: mysql
-  #   build:
-  #     context: .
-  #     dockerfile: ./docker/mysql/Dockerfile
-  #   ports:
-  #   - '13306:3306'
-  #   volumes:
-  #   - ./initdb.d:/docker-entrypoint-initdb.d
-  #   environment:
-  #     MYSQL_ROOT_PASSWORD: root
-  #     MYSQL_DATABASE: team_b
-  #     MYSQL_USER: root
-  #     MYSQL_PASSWORD: admin
-  #     TZ: 'Asia/Tokyo'
-  #     backend:
-  #   command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
-   
-  # webserver:
-  #   container_name: nginx
-  #   build:
-  #     context: .
-  #     dockerfile: ./docker/nginx/Dockerfile
-  #   ports:
-  #     - 8000:8000
-  #   volumes:
-  #     - ./frontend/build:/var/www
-  #     - ./containers/nginx/:/etc/nginx/conf.d/
-  #   depends_on:
-  #     - frontend
+  backend:
+    container_name: spring_production
+    build:
+      context: .
+      dockerfile: ./docker/production/spring/Dockerfile
+    # volumes: // 本番環境ではソースコードをマウントしない jarが上書きされ見つからなくなるため
+    #   - ./backend:/app/backend
+    ports:
+      - "18080:18080"
+    depends_on:
+      - database
+    command: java -jar /app/backend/build/libs/backend-0.0.1-SNAPSHOT.jar
+
+  database:
+    container_name: mysql_production
+    build:
+      context: .
+      dockerfile: ./docker/production/mysql/Dockerfile
+    ports:
+      - "13306:13306"
+    volumes:
+      - ./database/mysql_volume:/var/lib/mysql # 保存領域
+      - ./database:/docker-entrypoint-initdb.d # 初回テーブル・データ生成
+    environment:
+      MYSQL_ROOT_PASSWORD: admin
+      MYSQL_DATABASE: team_b
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+      TZ: "Asia/Tokyo"
+    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
