@@ -1,5 +1,7 @@
 FROM mysql:8.0.0
 
-RUN echo "USE mysql;" > /docker-entrypoint-initdb.d/timezones.sql &&  mysql_tzinfo_to_sql /usr/share/zoneinfo >> /docker-entrypoint-initdb.d/timezones.sql
+COPY ./docker/production/mysql/01-init.sql /docker-entrypoint-initdb.d/01-init.sql
+COPY ./docker/production/mysql/02-schema.sql /docker-entrypoint-initdb.d/02-schema.sql
+COPY ./docker/production/mysql/03-data.sql /docker-entrypoint-initdb.d/03-data.sql
 
-# COPY my.conf /etc/mysql/conf.d/my.conf
+EXPOSE 3306

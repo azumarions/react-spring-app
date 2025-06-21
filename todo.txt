@@ -9,8 +9,8 @@ reactがnginx上で動作する
 
 docker compose -f docker-compose.prod.yml up --build -d --no-cache
 
-# pagination
-# docker-production
-# ecr
-# enviroment
+# pagination ok データの表示が100まで、ページネーションの追加で解決
+# docker-production 接続完了
+# ecr ec2でpullした際のdockerfileの指定
+# enviroment バックエンドok, フロント vite yet
 # 

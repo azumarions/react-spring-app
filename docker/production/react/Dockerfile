@@ -1,8 +1,9 @@
 # Build stage
 FROM node:20-alpine as build
 WORKDIR /app/frontend
-COPY frontend .
+COPY frontend/package*.json ./
 RUN npm install
+COPY frontend .
 RUN npm run build
 
 # Serve stage
