@@ -39,9 +39,9 @@ services:
       - ./database/mysql_volume:/var/lib/mysql # 保存領域
       - ./database:/docker-entrypoint-initdb.d # 初回テーブル・データ生成
     environment:
-      MYSQL_ROOT_PASSWORD: admin
+      MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: team_b
-      MYSQL_USER: user
-      MYSQL_PASSWORD: password
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: pass
       TZ: 'Asia/Tokyo'
     command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
