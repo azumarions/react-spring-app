@@ -1,23 +1,17 @@
 version: "3"
 services:
   frontend:
+    image: <your-account-id>.dkr.ecr.ap-northeast-1.amazonaws.com/react-nginx:latest
     container_name: react_production
-    build:
-      context: .
-      dockerfile: ./docker/production/react/Dockerfile
     # environment:
-    #   - WATCHPACK_POLLING=true
     #   - viteの環境変数を設定する場合は、.env.productionファイルを作成して、VITE_で始まる変数を定義する
-    tty: true
     ports:
       - "80:80"
     command: nginx -g daemon off;
 
   backend:
+    image: <your-account-id>.dkr.ecr.ap-northeast-1.amazonaws.com/spring:latest
     container_name: spring_production
-    build:
-      context: .
-      dockerfile: ./docker/production/spring/Dockerfile
     environment:
       - SPRING_DATASOURCE_URL=jdbc:mysql://database:3306/team_b?useSSL=false&characterEncoding=utf8&serverTimezone=Asia/Tokyo
       - SPRING_DATASOURCE_USERNAME=admin
@@ -31,18 +25,16 @@ services:
     command: sh -c "/wait-for-it.sh database:3306 -- java -jar /app/backend/build/libs/backend-0.0.1-SNAPSHOT.jar"
 
   database:
+    image: <your-account-id>.dkr.ecr.ap-northeast-1.amazonaws.com/mysql:latest
     container_name: mysql_production
-    build:
-      context: .
-      dockerfile: ./docker/production/mysql/Dockerfile
-    ports:
-      - "3306:3306"
     volumes:
-      - ./mysql_volume:/var/lib/mysql # 保存領域
+      - ./mysql_volume:/var/lib/mysql
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: team_b
       MYSQL_USER: admin
       MYSQL_PASSWORD: pass
       TZ: "Asia/Tokyo"
+    ports:
+      - "3306:3306"
     command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
